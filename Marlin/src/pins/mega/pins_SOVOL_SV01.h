@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
 #pragma once
@@ -25,7 +25,7 @@
  * SOVOL SV01 pin assignments
  */
 
-#ifndef __AVR_ATmega2560__
+#if NOT_TARGET(__AVR_ATmega2560__)
   #error "Oops! Select 'Arduino/Genuino Mega or Mega 2560' in 'Tools > Board.'"
 #endif
 
@@ -135,11 +135,12 @@
   #define TEMP_BED_PIN     14   // Analog Input
 #endif
 
-// SPI for Max6675 or Max31855 Thermocouple
-#if DISABLED(SDSUPPORT)
-  #define MAX6675_SS_PIN   66   // Don't use 53 if there is even the remote possibility of using Display/SD card
-#else
-  #define MAX6675_SS_PIN   66   // Don't use 49 as this is tied to the switch inside the SD card socket to detect if there is an SD card present
+//
+// SPI for MAX Thermocouple
+//
+#ifndef TEMP_0_CS_PIN
+  #define TEMP_0_CS_PIN    66   // Don't use 53 if there is even the remote possibility of using Display/SD card
+                                 // Don't use 49 as this is tied to the switch inside the SD card socket to detect if there is an SD card present
 #endif
 
 //
@@ -316,21 +317,23 @@
 //
 // Průša i3 MK2 Multiplexer Support
 //
-#ifndef E_MUX0_PIN
-  #define E_MUX0_PIN 40   // Z_CS_PIN
-#endif
-#ifndef E_MUX1_PIN
-  #define E_MUX1_PIN 42   // E0_CS_PIN
-#endif
-#ifndef E_MUX2_PIN
-  #define E_MUX2_PIN 44   // E1_CS_PIN
+#if HAS_PRUSA_MMU1
+  #ifndef E_MUX0_PIN
+    #define E_MUX0_PIN 40   // Z_CS_PIN
+  #endif
+  #ifndef E_MUX1_PIN
+    #define E_MUX1_PIN 42   // E0_CS_PIN
+  #endif
+  #ifndef E_MUX2_PIN
+    #define E_MUX2_PIN 44   // E1_CS_PIN
+  #endif
 #endif
 
 //////////////////////////
 // LCDs and Controllers //
 //////////////////////////
 
-#if HAS_SPI_LCD
+#if HAS_WIRED_LCD
 
   //
   // LCD Display output pins
@@ -341,7 +344,7 @@
     #define LCD_PINS_ENABLE     51   // SID (MOSI)
     #define LCD_PINS_D4         52   // SCK (CLK) clock
 
-  #elif BOTH(NEWPANEL, PANEL_ONE)
+  #elif BOTH(IS_NEWPANEL, PANEL_ONE)
 
     #define LCD_PINS_RS         40
     #define LCD_PINS_ENABLE     42
@@ -358,7 +361,7 @@
       #define LCD_PINS_ENABLE   29
       #define LCD_PINS_D4       25
 
-      #if DISABLED(NEWPANEL)
+      #if !IS_NEWPANEL
         #define BEEPER_PIN      37
       #endif
 
@@ -391,13 +394,13 @@
 
       #define LCD_PINS_D7       29
 
-      #if DISABLED(NEWPANEL)
+      #if !IS_NEWPANEL
         #define BEEPER_PIN      33
       #endif
 
     #endif
 
-    #if DISABLED(NEWPANEL)
+    #if !IS_NEWPANEL
       // Buttons attached to a shift register
       // Not wired yet
       //#define SHIFT_CLK       38
@@ -411,7 +414,7 @@
   //
   // LCD Display input pins
   //
-  #if ENABLED(NEWPANEL)
+  #if IS_NEWPANEL
 
     #if ENABLED(REPRAP_DISCOUNT_SMART_CONTROLLER)
 
@@ -459,7 +462,7 @@
       #define LCD_SDSS          SDSS
       #define SD_DETECT_PIN     49
 
-    #elif ANY(VIKI2, miniVIKI)
+    #elif EITHER(VIKI2, miniVIKI)
 
       #define DOGLCD_CS         45
       #define DOGLCD_A0         44
@@ -609,6 +612,6 @@
       #endif
 
     #endif
-  #endif // NEWPANEL
+  #endif // IS_NEWPANEL
 
-#endif // HAS_SPI_LCD
+#endif // HAS_WIRED_LCD

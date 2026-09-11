@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cfn-lint *)",
+      "Bash(bash -n *)",
+      "Bash(curl -s https://raw.githubusercontent.com/*)",
+      "Bash(awk *)"
+    ]
+  }
+}
